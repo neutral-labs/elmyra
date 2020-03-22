@@ -19,7 +19,7 @@
 #define ENV_MIN 50
 #define ENV_ATTACK 1
 #define ENV_RELEASE 1
-#define ENV_SPEED_FACTOR 128 ////steppy?
+#define ENV_SPEED_FACTOR 128
 #define ENV_BYPASS_ENABLE_TIME 1
 #define AUDIO_BUF_SIZE 1000
 #define AUDIO_BUF_PREFILL 100
