@@ -5,7 +5,6 @@
 #include "Delay.hpp"
 #include "slewEnvelope.hpp"
 #include "Oscillator.hpp"
-#include "chaosLFO.hpp"
 
 class synthCtx
 {
@@ -13,7 +12,6 @@ class synthCtx
     Oscillator osc[NUM_VOICES];
     Delay dly;
     slewEnvelope env[NUM_VOICES];
-    chaosLFO lfoTune[NUM_VOICES]; 
     int touch_value[NUM_VOICES];
     int env_led_level[NUM_VOICES];
     int env_value[NUM_VOICES];
