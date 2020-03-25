@@ -56,8 +56,13 @@ class slewEnvelope
       newValue = (AMP_MAX * newValue) / envMax;
     
       if (newValue > currentValue)
-      {
+      {  
         currentValue += envAttack;
+
+        if (currentValue > newValue)
+        {
+          currentValue = newValue;
+        }
       }
       else if (newValue != currentValue)
       {
