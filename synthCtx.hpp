@@ -22,6 +22,9 @@ class synthCtx
     int envBypass[NUM_VOICES];
     int envState[NUM_VOICES];
     int envStateCountdown[NUM_VOICES];
+    int waveState[NUM_VOICES];
+    int waveSpecialMode[NUM_VOICES];
+    int waveSpecialModeCountdown[NUM_VOICES];
     int delay_wet;
 };
 

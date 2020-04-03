@@ -33,7 +33,7 @@ static inline int getValueFromPotTune(int input, int *oldValue, int dead_zone, i
 
   if (newValue < *oldValue - 200 || newValue > *oldValue + 200)
   {
-    factor = 5;//1000 / abs(*oldValue - newValue) + 2;
+    factor = 5;
   }
   else
   {
@@ -97,7 +97,7 @@ static inline int updateSingleEnvSpeed(synthCtx *ctx, int voice, int input)
     }
     else
     {
-      ctx->envStateCountdown[voice] = ENV_BYPASS_ENABLE_TIME * IO_UPDATE_FREQ;
+      ctx->envStateCountdown[voice] = SPECIAL_MODE_ENABLE_TIME * IO_UPDATE_FREQ;
     }
   }
   else
@@ -119,18 +119,73 @@ static inline int updateInputEnvSpeed(synthCtx *ctx)
   ctx->env_speed[2] = updateSingleEnvSpeed(ctx, 2, PIN_IN_ENV_3);
 }
 
+static inline int updateSingleOscWave(synthCtx *ctx, int voice, int input)
+{
+  int stateChanged;
+  int state = ((digitalRead(input) == HIGH) ? OSC_WAVE_SLEW_LOW : OSC_WAVE_SLEW_HIGH);
+  
+  if (ctx->waveSpecialModeCountdown[voice] > 0)
+  {
+    ctx->waveSpecialModeCountdown[voice]--;
+  }
+
+  if (ctx->waveState[voice] != state)
+  {
+    stateChanged = 1;
+    ctx->waveState[voice] = state;
+  }
+  else
+  {
+    stateChanged = 0;
+  }
+  
+  if (stateChanged)
+  {
+    if (ctx->waveSpecialModeCountdown[voice] > 0)
+    {
+      if (ctx->waveSpecialMode[voice] == 0)
+      {
+        ctx->waveSpecialMode[voice] = 1;
+      }
+      else
+      {
+        ctx->waveSpecialMode[voice] = 0;
+      }
+      
+      ctx->waveSpecialModeCountdown[voice] = 0;
+      return state;
+    }
+    else
+    {
+      ctx->waveSpecialModeCountdown[voice] = SPECIAL_MODE_ENABLE_TIME * IO_UPDATE_FREQ;
+    }
+  }
+  
+  return state;
+}
+
 static inline int updateInputOscWave(synthCtx *ctx)
 {
-  ctx->osc_slew[0] = ((digitalRead(PIN_IN_WAVE_1) == HIGH) ? OSC_WAVE_SLEW_LOW : OSC_WAVE_SLEW_HIGH);
-  ctx->osc_slew[1] = ((digitalRead(PIN_IN_WAVE_2) == HIGH) ? OSC_WAVE_SLEW_LOW : OSC_WAVE_SLEW_HIGH);
-  ctx->osc_slew[2] = ((digitalRead(PIN_IN_WAVE_3) == HIGH) ? OSC_WAVE_SLEW_LOW : OSC_WAVE_SLEW_HIGH);
+  ctx->osc_slew[0] = updateSingleOscWave(ctx, 0, PIN_IN_WAVE_1);
+  ctx->osc_slew[1] = updateSingleOscWave(ctx, 1, PIN_IN_WAVE_2);
+  ctx->osc_slew[2] = updateSingleOscWave(ctx, 2, PIN_IN_WAVE_3);
 }
 
 static inline int updateInputOscTune(synthCtx *ctx)
 {
-  ctx->osc[0].setFreq(POT_TUNE_BASE + getValueFromPotTune(PIN_IN_TUNE_1, &ctx->tune_value[0], POT_DEAD_ZONE_TUNE, SMOOTHING_FACTOR_TUNE) * 100);
-  ctx->osc[1].setFreq(POT_TUNE_BASE + getValueFromPotTune(PIN_IN_TUNE_2, &ctx->tune_value[1], POT_DEAD_ZONE_TUNE, SMOOTHING_FACTOR_TUNE) * 100);
-  ctx->osc[2].setFreq(POT_TUNE_BASE + getValueFromPotTune(PIN_IN_TUNE_3, &ctx->tune_value[2], POT_DEAD_ZONE_TUNE, SMOOTHING_FACTOR_TUNE) * 100);
+  if (ctx->waveSpecialMode[SPECIAL_MODE_SCALE_NUM])
+  {
+    ctx->osc[0].setFreq(scale[(getValueFromPotTune(PIN_IN_TUNE_1, &ctx->tune_value[0], POT_DEAD_ZONE_TUNE, SMOOTHING_FACTOR_TUNE) * SCALE_MAX) / POT_MAX]);
+    ctx->osc[1].setFreq(scale[(getValueFromPotTune(PIN_IN_TUNE_2, &ctx->tune_value[1], POT_DEAD_ZONE_TUNE, SMOOTHING_FACTOR_TUNE) * SCALE_MAX) / POT_MAX]);
+    ctx->osc[2].setFreq(scale[(getValueFromPotTune(PIN_IN_TUNE_3, &ctx->tune_value[2], POT_DEAD_ZONE_TUNE, SMOOTHING_FACTOR_TUNE) * SCALE_MAX) / POT_MAX]);
+  }
+  else
+  {
+    ctx->osc[0].setFreq(POT_TUNE_BASE + getValueFromPotTune(PIN_IN_TUNE_1, &ctx->tune_value[0], POT_DEAD_ZONE_TUNE, SMOOTHING_FACTOR_TUNE) * 100);
+    ctx->osc[1].setFreq(POT_TUNE_BASE + getValueFromPotTune(PIN_IN_TUNE_2, &ctx->tune_value[1], POT_DEAD_ZONE_TUNE, SMOOTHING_FACTOR_TUNE) * 100);
+    ctx->osc[2].setFreq(POT_TUNE_BASE + getValueFromPotTune(PIN_IN_TUNE_3, &ctx->tune_value[2], POT_DEAD_ZONE_TUNE, SMOOTHING_FACTOR_TUNE) * 100);    
+  }
+
   ctx->mod_value = scalePotValue(getValueFromPot(PIN_IN_MOD, &ctx->mod_value_raw, POT_DEAD_ZONE_NORMAL, SMOOTHING_FACTOR_NORMAL), OSC_MOD_AMOUNT_MAX);
 }
 
