@@ -118,7 +118,6 @@ void setup()
 
   io_update_countdown = 0;
   tmp_sample_waiting = false;
-  ctx.delay_wet = 0;
 
   pinMode(PIN_IN_GSR_1, INPUT);
   pinMode(PIN_IN_GSR_2, INPUT);
@@ -143,26 +142,6 @@ void setup()
 
   analogWriteResolution(10);
   analogReadResolution(12);
-
-  for (i = 0; i < NUM_VOICES; i++)
-  {
-    ctx.osc_slew[i] = OSC_WAVE_SLEW_LOW;
-    ctx.osc[i].setSampleRate(SAMPLE_RATE);
-    ctx.osc[i].setSlew(ctx.osc_slew[i]);
-    ctx.env[i].setMax(ENV_MAX);
-    ctx.env[i].setMin(ENV_MIN);
-    ctx.env[i].setAttack(ENV_ATTACK);
-    ctx.env[i].setRelease(ENV_RELEASE);
-    ctx.envBypass[i] = 0;
-    ctx.envState[i] = 0;
-    ctx.envStateCountdown[i] = 0;
-    ctx.tune_value[i] = 0;
-    ctx.env_speed[i] = 1;
-  }
-
-  ctx.dly.setSampleRate(SAMPLE_RATE);
-  ctx.dly.setTime(ctx.delay_time);
-  ctx.dly.setFeedback(ctx.delay_feedback);
 
   for (i = 0; i < AUDIO_BUF_PREFILL; i++)
   {
