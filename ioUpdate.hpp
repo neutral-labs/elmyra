@@ -67,7 +67,14 @@ static inline void updateInputTouch(synthCtx *ctx)
 
       for (i = 0; i < NUM_VOICES; i++)
       {
-        ctx->sequencerDataTune[i][ctx->sequencerCurrentStep] = ctx->osc_tune[i];
+        if (ctx->env_speed[i] != 1)
+        {
+          ctx->sequencerDataTune[i][ctx->sequencerCurrentStep] = ctx->osc_tune[i];
+        }
+        else
+        {
+          ctx->sequencerDataTune[i][ctx->sequencerCurrentStep] = 0;
+        }
       }
       
       ctx->sequencerCurrentStep++;
@@ -286,7 +293,10 @@ static inline void updateFromSequencer(synthCtx *ctx)
 
     for (i = 0; i < NUM_VOICES; i++)
     {
-      ctx->osc_tune[i] = ctx->sequencerDataTune[i][ctx->sequencerCurrentStep];
+      if (ctx->sequencerDataTune[i][ctx->sequencerCurrentStep] != 0)
+      {
+        ctx->osc_tune[i] = ctx->sequencerDataTune[i][ctx->sequencerCurrentStep];
+      }
     }
     
     if (++ctx->sequencerIntraStepCount >= ctx->sequencerStepLen)
