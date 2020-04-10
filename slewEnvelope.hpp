@@ -74,6 +74,11 @@ class slewEnvelope
         {
           currentValue = 0;
         }
+
+        if (currentValue < newValue)
+        {
+          currentValue = newValue;
+        }
       }
 
       return currentValue;
