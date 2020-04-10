@@ -89,11 +89,11 @@ static inline void updateInputTouch(synthCtx *ctx)
 
 #ifdef SERIAL_DEBUG_TOUCH
   Serial.print("val1: ");
-  Serial.print(touch_value[0]);
+  Serial.print(ctx->touch_value[0]);
   Serial.print("\tval2: ");
-  Serial.print(touch_value[1]);
+  Serial.print(ctx->touch_value[1]);
   Serial.print("\tval3: ");
-  Serial.println(touch_value[2]);
+  Serial.println(ctx->touch_value[2]);
 #endif
 }
 
