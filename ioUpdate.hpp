@@ -55,6 +55,7 @@ static inline void updateInputTouch(synthCtx *ctx)
   int i;
   int old_touch_value_0 = ctx->touch_value[0];
   
+  // temporarily swap touch sensor pins to fix hardware problem
   ctx->touch_value[0] = getValueFromTouchSensor(PIN_IN_GSR_1, &ctx->touch_value[0], SMOOTHING_FACTOR_TOUCH);
   ctx->touch_value[1] = getValueFromTouchSensor(PIN_IN_GSR_2, &ctx->touch_value[1], SMOOTHING_FACTOR_TOUCH);
   ctx->touch_value[2] = getValueFromTouchSensor(PIN_IN_GSR_3, &ctx->touch_value[2], SMOOTHING_FACTOR_TOUCH);
@@ -231,9 +232,9 @@ static inline void updateInputOscTune(synthCtx *ctx)
 {
   if (ctx->waveSpecialMode[SPECIAL_MODE_SCALE_NUM])
   {
-    ctx->osc_tune[0] = scale[(getValueFromPotTune(PIN_IN_TUNE_1, &ctx->tune_value[0], POT_DEAD_ZONE_TUNE, SMOOTHING_FACTOR_TUNE) * SCALE_MAX) / POT_MAX];
-    ctx->osc_tune[1] = scale[(getValueFromPotTune(PIN_IN_TUNE_2, &ctx->tune_value[1], POT_DEAD_ZONE_TUNE, SMOOTHING_FACTOR_TUNE) * SCALE_MAX) / POT_MAX];
-    ctx->osc_tune[2] = scale[(getValueFromPotTune(PIN_IN_TUNE_3, &ctx->tune_value[2], POT_DEAD_ZONE_TUNE, SMOOTHING_FACTOR_TUNE) * SCALE_MAX) / POT_MAX];
+    ctx->osc_tune[0] = cMinorScale[(getValueFromPotTune(PIN_IN_TUNE_1, &ctx->tune_value[0], POT_DEAD_ZONE_TUNE, SMOOTHING_FACTOR_TUNE) * MINOR_SCALE_MAX) / POT_MAX];
+    ctx->osc_tune[1] = cMinorScale[(getValueFromPotTune(PIN_IN_TUNE_2, &ctx->tune_value[1], POT_DEAD_ZONE_TUNE, SMOOTHING_FACTOR_TUNE) * MINOR_SCALE_MAX) / POT_MAX];
+    ctx->osc_tune[2] = cMinorScale[(getValueFromPotTune(PIN_IN_TUNE_3, &ctx->tune_value[2], POT_DEAD_ZONE_TUNE, SMOOTHING_FACTOR_TUNE) * MINOR_SCALE_MAX) / POT_MAX];
   }
   else
   {
